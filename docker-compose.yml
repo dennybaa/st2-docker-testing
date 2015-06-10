@@ -1,0 +1,115 @@
+# ST2_AUTH_URL must be present on client and st2web
+# All services get it from DB
+
+st2api:
+  image: stackstorm/st2api
+  command: bash -c 'sleep 1; /usr/local/bin/tiller'
+  environment:
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - rabbitmq
+    - mongodb
+  ports:
+    - "9101:9101"
+
+
+st2sensorcontainer:
+  image: stackstorm/st2sensorcontainer
+  command: bash -c 'sleep 2; /usr/local/bin/tiller'
+  environment:
+    - ST2_API_URL=http://st2api:9101
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - rabbitmq
+    - mongodb
+    - st2api
+
+
+st2rulesengine:
+  image: stackstorm/st2rulesengine
+  command: bash -c 'sleep 2; /usr/local/bin/tiller'
+  environment:
+    - ST2_API_URL=http://st2api:9101
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - rabbitmq
+    - mongodb
+    - st2api
+
+
+st2resultstracker:
+  image: stackstorm/st2resultstracker
+  command: bash -c 'sleep 2; /usr/local/bin/tiller'
+  environment:
+    - ST2_API_URL=http://st2api:9101
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - rabbitmq
+    - mongodb
+    - st2api
+
+
+st2notifier:
+  image: stackstorm/st2notifier
+  command: bash -c 'sleep 2; /usr/local/bin/tiller'
+  environment:
+    - ST2_API_URL=http://st2api:9101
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - rabbitmq
+    - mongodb
+    - st2api
+
+
+st2actionrunner:
+  image: stackstorm/st2actionrunner
+  command: bash -c 'sleep 2; /usr/local/bin/tiller'
+  environment:
+    - ST2_API_URL=http://st2api:9101
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - st2api
+    - rabbitmq
+    - mongodb
+
+
+st2auth:
+  image: stackstorm/st2auth
+  command: bash -c 'sleep 2; /usr/local/bin/tiller'
+  environment:
+    - ST2_API_URL=http://st2api:9101
+    - ST2_RMQ_HOST=rabbitmq
+    - ST2_DB_HOST=mongodb
+  links:
+    - st2api
+    - rabbitmq
+    - mongodb
+  ports:
+    - "9100:9100"
+
+
+rabbitmq:
+  image: rabbitmq:management
+  hostname: rabbit-de3b883f7ed1  # fixed name, so that rabbit can reuse volumes
+  environment:
+    - RABBITMQ_NODENAME=rabbitmq
+  volumes:
+    - ./data/rabbitmq:/var/lib/rabbitmq
+    - ./etc/rabbitmq:/etc/rabbitmq
+  ports:
+    - "15672:15672"  # managment plugin port
+    - "5672:5672"
+
+mongodb:
+  image: mongo
+  volumes:
+    - ./data/mongo:/data/db
+    - ./etc/mongo/mongod.conf:/etc/mongod.conf
+  ports:
+    - "27017:27017"

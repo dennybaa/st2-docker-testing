@@ -31,7 +31,7 @@ st2 run core.local -- hostname
 st2 execution get !YOUR_EXEC_ID!
 ```
 
-If the above has been well, so than at list api, actionrunner, resultracker connections to mongo and redis are okay.
+If the above has been well, so then at least api, actionrunner, resultracker connections to mongo and redis are okay.
 
 ### Result
 

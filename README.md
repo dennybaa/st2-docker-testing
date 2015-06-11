@@ -1,7 +1,7 @@
 
 # Docker MultiContainer Layout
 
-## Files are written using puppet and all is orchestrated with too much code (including packer, puppet...). <u>Complexity,  Difficult!</u>
+## Files are written using puppet and all is orchestrated with too much code and tools (including packer, puppet...). <u>Complexity,  Difficult!</u>
 
 **Too many** tools to support containers like puppet, ruby, tiller, packer and maybe smth else. `Tiller` is good, but better to find smth pythonish (if it's finally needed) - just not making it necessary to bring ruby inside.
 
@@ -35,7 +35,7 @@ If the above has been well, so than at list api, actionrunner, resultracker conn
 
 ### Result
 
-Playing around with containers built with packer, st2factory, puppet and etc :) Most of the things seem to operate, the bugs bellow should be fixed however.
+Playing around with containers built with packer, st2factory, puppet and etc... Most of the things seem to operate, the bugs bellow should be fixed however.
 
 Personally, I can say supporting these containers is not fun, seems that there'll be no folks who might want to use them, this is my opinion anyway.
 
@@ -63,3 +63,12 @@ sudo: unable to initialize policy plugin
 
 ## Proper container layout docker-way
 
+- We don't need or want  base ("raw") images build with packer and other magical tools chef, puppet etc.
+- Docker container should be built with Dockerfile.
+  - Should provide **clarity** - https://github.com/docker-library/official-images#clarity
+  - Should provide **cacheability** - https://github.com/docker-library/official-images#cacheability
+  - etc.
+   
+   We need to make **simple and clear** Dockerfile for stackstorm containers. It's better to resemble the way how other containers are built, for example - https://github.com/docker-library/rabbitmq/blob/master/Dockerfile. And we should follow principles of official docker images https://github.com/docker-library/official-images. Following this practices we can create lightweight containers (with a small footprint), easy to use and easy to update for anyone.
+
+  Stackstorm packages for debian platform should be brushed up to eliminate magic around installation, so bringing up st2actions is as easy as `apt-get install st2actions`. Other platforms (rpm-based) no need to tackle right away, it doesn't block delivering of containers. However the brush up methods for debian platform can be useful for creating *proper* packages for other platforms as well.
